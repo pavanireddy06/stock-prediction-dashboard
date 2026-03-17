@@ -1,7 +1,5 @@
-flask
+Flask
 flask-cors
-numpy
-pandas
-yfinance
-gunicorn
 PyJWT
+gunicorn
+numpy
