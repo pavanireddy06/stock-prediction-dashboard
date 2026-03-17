@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <a href="/logout"><button>Logout</button></a>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title">📊 Stock Prediction Dashboard</h1>
+
+    <form method="POST" class="form">
+        <select name="stock">
+            <option value="AAPL">Apple (AAPL)</option>
+            <option value="TSLA">Tesla (TSLA)</option>
+            <option value="GOOGL">Google (GOOGL)</option>
+        </select>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <div class="card fade-in">
+        <h2>Prediction for {{ stock_name }}</h2>
+        <p class="result">{{ prediction }}</p>
+        <p class="accuracy">Accuracy: {{ accuracy }}%</p>
+    </div>
+
+    <div class="card slide-up">
+        <h2>Stock Price Graph</h2>
+        <img src="/static/graph.png">
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

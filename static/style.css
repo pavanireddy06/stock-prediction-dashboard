@@ -1,0 +1,87 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    text-align: center;
+    margin: 0;
+}
+
+/* Title animation */
+.title {
+    margin-top: 40px;
+    font-size: 36px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Form styling */
+.form {
+    margin: 20px;
+}
+
+select, button {
+    padding: 12px;
+    font-size: 16px;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+/* Button animation */
+button {
+    background: #22c55e;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+button:hover {
+    background: #16a34a;
+    transform: scale(1.05);
+}
+
+/* Card styling */
+.card {
+    background: #1e293b;
+    padding: 20px;
+    margin: 20px auto;
+    width: 60%;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* Result text */
+.result {
+    font-size: 32px;
+    color: #22c55e;
+}
+
+/* Accuracy text */
+.accuracy {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 1s ease-in-out;
+}
+
+.slide-up {
+    animation: slideUp 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes slideUp {
+    from {transform: translateY(50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+/* Image */
+img {
+    width: 80%;
+    border-radius: 10px;
+}

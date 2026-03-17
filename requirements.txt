@@ -1,0 +1,10 @@
+flask
+flask-jwt-extended
+werkzeug
+yfinance
+pandas
+numpy
+scikit-learn
+matplotlib
+gunicorn
+psycopg2-binary
