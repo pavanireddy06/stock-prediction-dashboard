@@ -2,26 +2,20 @@
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
 
-<div class="container">
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;">
 
-    <h1>🔐 Login</h1>
+<form action="/login" method="POST" style="background:#1e293b;padding:40px;border-radius:10px;">
+    <h2>Login</h2>
 
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" required><br><br>
-        <input type="password" name="password" placeholder="Password" required><br><br>
+    <input type="text" name="username" placeholder="Username" required style="display:block;margin:10px 0;padding:10px;">
+    <input type="password" name="password" placeholder="Password" required style="display:block;margin:10px 0;padding:10px;">
 
-        <button type="submit">Login</button>
-    </form>
-
-    {% if error %}
-    <p style="color:red;">{{ error }}</p>
-    {% endif %}
-
-</div>
+    <button type="submit" style="padding:10px;width:100%;background:#22c55e;color:white;border:none;">
+        Login
+    </button>
+</form>
 
 </body>
 </html>

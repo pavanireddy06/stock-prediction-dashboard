@@ -1,25 +1,19 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
-import jwt
-import datetime
 import random
+import matplotlib.pyplot as plt
+import os
 
 app = Flask(__name__)
-CORS(app)
 
-SECRET_KEY = "mysecret123"
-
-def get_db():
-    return sqlite3.connect("database.db")
-
+# ---------- DATABASE ----------
 def init_db():
-    conn = get_db()
+    conn = sqlite3.connect("database.db")
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
+            username TEXT,
             password TEXT
         )
     """)
@@ -28,84 +22,74 @@ def init_db():
 
 init_db()
 
-def generate_token(username):
-    return jwt.encode({
-        "user": username,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=5)
-    }, SECRET_KEY, algorithm="HS256")
+# ---------- ROUTES ----------
+@app.route('/')
+def home():
+    return render_template("index.html")
 
-def verify_token(token):
-    try:
-        return jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["user"]
-    except:
-        return None
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-@app.route("/api/register", methods=["POST"])
-def register():
-    data = request.get_json()
-    conn = get_db()
-    c = conn.cursor()
-    try:
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
-                  (data["username"], data["password"]))
-        conn.commit()
-        return jsonify({"message": "User registered successfully"})
-    except:
-        return jsonify({"error": "User already exists"}), 400
-    finally:
+        conn = sqlite3.connect("database.db")
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        user = c.fetchone()
         conn.close()
 
-@app.route("/api/login", methods=["POST"])
-def login():
-    data = request.get_json()
-    conn = get_db()
+        if user:
+            return redirect(url_for('home'))
+        else:
+            return "Invalid Login"
+
+    return render_template("login.html")
+
+# ---------- CREATE USER ----------
+@app.route('/create-user')
+def create_user():
+    conn = sqlite3.connect("database.db")
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username=? AND password=?",
-              (data["username"], data["password"]))
-    user = c.fetchone()
+    c.execute("INSERT INTO users (username,password) VALUES (?,?)", ("admin","admin123"))
+    conn.commit()
     conn.close()
+    return "User created"
 
-    if user:
-        return jsonify({"token": generate_token(data["username"])})
-    return jsonify({"error": "Invalid credentials"}), 401
-
-@app.route("/api/predict", methods=["POST"])
+# ---------- PREDICTION ----------
+@app.route('/api/predict', methods=['POST'])
 def predict():
-    auth = request.headers.get("Authorization")
-
-    if not auth:
-        return jsonify({"error": "Token missing"}), 401
-
-    try:
-        token = auth.split(" ")[1]
-    except:
-        return jsonify({"error": "Invalid token format"}), 401
-
-    user = verify_token(token)
-
-    if not user:
-        return jsonify({"error": "Invalid token"}), 401
-
-    data = request.get_json()
+    data = request.json
     stock = data.get("stock")
 
     if not stock:
-        return jsonify({"error": "Stock required"}), 400
+        return jsonify({"error": "Enter stock name"})
 
-    stock = stock.upper()
-
-    open_price = random.uniform(100, 300)
-    close_price = random.uniform(100, 300)
+    # Simple logic
+    open_price = random.randint(100, 300)
+    close_price = random.randint(100, 300)
 
     prediction = "UP 📈" if close_price > open_price else "DOWN 📉"
-    accuracy = round(random.uniform(75, 95), 2)
+    accuracy = round(random.uniform(70, 90), 2)
+
+    # Graph generation
+    if not os.path.exists("static"):
+        os.makedirs("static")
+
+    x = [1,2,3,4,5]
+    y = [random.randint(100,200) for _ in x]
+
+    plt.figure()
+    plt.plot(x, y)
+    plt.title("Stock Trend")
+    plt.savefig("static/graph.png")
+    plt.close()
 
     return jsonify({
-        "user": user,
-        "stock": stock,
         "prediction": prediction,
         "accuracy": accuracy
     })
 
+# ---------- RUN ----------
 if __name__ == "__main__":
     app.run(debug=True)

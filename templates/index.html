@@ -2,39 +2,45 @@
 <html>
 <head>
     <title>Stock Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <a href="/logout"><button>Logout</button></a>
 </head>
-<body>
 
-<div class="container">
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;background:#020617;color:white;">
 
-    <h1 class="title">📊 Stock Prediction Dashboard</h1>
+<div style="background:#1e293b;padding:40px;border-radius:10px;text-align:center;">
 
-    <form method="POST" class="form">
-        <select name="stock">
-            <option value="AAPL">Apple (AAPL)</option>
-            <option value="TSLA">Tesla (TSLA)</option>
-            <option value="GOOGL">Google (GOOGL)</option>
-        </select>
+    <h2>Stock Prediction</h2>
 
-        <button type="submit">Predict</button>
-    </form>
+    <input type="text" id="stock" placeholder="Enter stock (MSFT)" style="padding:10px;margin:10px;">
 
-    {% if prediction %}
-    <div class="card fade-in">
-        <h2>Prediction for {{ stock_name }}</h2>
-        <p class="result">{{ prediction }}</p>
-        <p class="accuracy">Accuracy: {{ accuracy }}%</p>
-    </div>
+    <button onclick="predict()" style="padding:10px;background:#3b82f6;color:white;border:none;">
+        Predict
+    </button>
 
-    <div class="card slide-up">
-        <h2>Stock Price Graph</h2>
-        <img src="/static/graph.png">
-    </div>
-    {% endif %}
+    <p id="result"></p>
+
+    <img id="graph" width="300">
 
 </div>
+
+<script>
+async function predict() {
+    const stock = document.getElementById("stock").value;
+
+    const res = await fetch("/api/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ stock })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("result").innerText =
+        data.prediction + " | Accuracy: " + data.accuracy + "%";
+
+    document.getElementById("graph").src =
+        "/static/graph.png?" + new Date().getTime();
+}
+</script>
 
 </body>
 </html>
